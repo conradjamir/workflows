@@ -7,6 +7,8 @@
 var gulp = require('gulp'),
     gutil = require('gulp-util'),
     coffee = require('gulp-coffee'),
+    concat = require('gulp-concat'),
+    browserify = require('gulp-browserify'),
     paths;
  
 // paths object of source files
@@ -50,4 +52,12 @@ gulp.task('coffee', function(){
         }).on('error', gutil.log)
       ) //pipe() sends source to coffee() library with object parameters bare:true so it formats w/no safety wrapper
       .pipe(gulp.dest(paths.scripts.src)); //write out processed script into directory location
+});
+
+// process js files with gulp-concat and browserify into one js file
+gulp.task('js', function(){
+  gulp.src(paths.scripts.js) //src('location of file to process'), or src([]) array of files.
+      .pipe(concat('script.js')) //pipe() sends js sources to concat() library to process into script.js which is the name of js file in html.
+      .pipe(browserify()) //pipe() takes in browserify() method that adds jquery and mustache libraries to the script.js
+      .pipe(gulp.dest(paths.scripts.devDest)); //pipe() sends script.js to destination folder.
 });
