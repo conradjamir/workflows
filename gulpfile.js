@@ -42,7 +42,9 @@ paths = {
   },
   builds: {
     devDest: 'builds/development',
-    proDest: 'builds/production'
+    proDest: 'builds/production',
+    html: 'builds/development/*.html',
+    json: 'builds/development/js/*.json'
   }
 };
 
@@ -83,11 +85,25 @@ gulp.task('compass', function(){
       .pipe(connect.reload()); //pipe() triggers the connect reload() method to reload page when task is run.
 });
 
+// task to reload html
+gulp.task('html', function(){
+    gulp.src(paths.builds.html)
+        .pipe(connect.reload());
+});
+
+// task to reload json
+gulp.task('json', function(){
+    gulp.src(paths.builds.json)
+        .pipe(connect.reload());
+});
+
 // task to watch for changes gulp.watch(source, task)
 gulp.task('watch', function(){
   gulp.watch(paths.scripts.coffee, ['coffee']);
   gulp.watch(paths.scripts.js, ['js']); //option to add connect.reload()
   gulp.watch(paths.styles.sass, ['compass']);
+  gulp.watch(paths.builds.html, ['html']);
+  gulp.watch(paths.builds.json, ['json']);
 });
 
 // task to launch a webserver and do a live reload
@@ -99,5 +115,5 @@ gulp.task('connect', function(){
 });
 
 // if task name is 'default' just type: gulp in terminal
-gulp.task('default', ['coffee', 'js', 'compass', 'connect', 'watch']); 
+gulp.task('default', ['coffee', 'js', 'compass', 'html', 'json', 'connect', 'watch']); 
 
