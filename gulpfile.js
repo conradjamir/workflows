@@ -78,3 +78,10 @@ gulp.task('compass', function(){
 });
 
 gulp.task('default', ['coffee', 'js', 'compass']); // if task name is 'default' just type: gulp in terminal
+
+// task to watch for changes gulp.watch(source, task)
+gulp.task('watch', function(){
+  gulp.watch(paths.scripts.coffee, ['coffee']);
+  gulp.watch(paths.scripts.js, ['js']);
+  gulp.watch(paths.styles.sass, ['compass']);
+});
