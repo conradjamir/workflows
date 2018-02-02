@@ -56,7 +56,7 @@ gulp.task('coffee', function(){
 });
 
 // process js files with gulp-concat and browserify into one js file
-gulp.task('js', function(){
+gulp.task('js', function(){ // you can process other tasks by adding array: gulp.task('js', ['coffee', 'compass']), function(){}
   gulp.src(paths.scripts.js) //src('location of file to process'), or src([]) array of files.
       .pipe(concat('script.js')) //pipe() sends js sources to concat() library to process into script.js which is the name of js file in html.
       .pipe(browserify()) //pipe() takes in browserify() method that adds jquery and mustache libraries to the script.js
@@ -65,14 +65,16 @@ gulp.task('js', function(){
 
 // process SASS/Compas files with gulp-compass
 gulp.task('compass', function(){
-  gulp.src(paths.styles.styleSass) //src('location of .scss file to process')
+  gulp.src(paths.styles.styleSass) //src('location of style.scss file to process')
       .pipe(compass({
         sass: paths.styles.src, //src of all .scss files
         image: paths.images.devDest, //src of images
-        css: paths.styles.devDest, //destination to send processed style.css (if not specified a copy of css folder is written in the root folder)
-        style: 'expanded',
-        comments: true
+        css: paths.styles.devDest, //destination to send processed style.css (bug in program, if not specified, a copy of css folder is written in the root folder)
+        style: 'expanded', //other option is compressed, see sass api for different styles
+        comments: true //adds comments/line numbers in css where the style originated from
       })) //pipe() sends style.scss to compass() library to process into style.css
       .on('error', gutil.log) //outputs a log error in the terminal
-      .pipe(gulp.dest(paths.styles.devDest));
+      .pipe(gulp.dest(paths.styles.devDest)); //pipe() sends style.css to destination folder.
 });
+
+gulp.task('default', ['coffee', 'js', 'compass']); // if task name is 'default' just type: gulp in terminal
