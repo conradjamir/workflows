@@ -77,11 +77,13 @@ gulp.task('compass', function(){
       .pipe(gulp.dest(paths.styles.devDest)); //pipe() sends style.css to destination folder.
 });
 
-gulp.task('default', ['coffee', 'js', 'compass']); // if task name is 'default' just type: gulp in terminal
-
 // task to watch for changes gulp.watch(source, task)
 gulp.task('watch', function(){
   gulp.watch(paths.scripts.coffee, ['coffee']);
   gulp.watch(paths.scripts.js, ['js']);
   gulp.watch(paths.styles.sass, ['compass']);
 });
+
+// if task name is 'default' just type: gulp in terminal
+gulp.task('default', ['coffee', 'js', 'compass', 'watch']); 
+
