@@ -13,7 +13,8 @@ var gulp = require('gulp'),
     connect = require('gulp-connect'),
     gulpif = require('gulp-if'),
     uglify = require('gulp-uglify'),
-    babel = require('gulp-babel');
+    babel = require('gulp-babel'),
+    minifyHTML = require('gulp-minify-html');
 
 var sassDir = 'components/sass/',
     scriptsDir = 'components/scripts/',
@@ -59,8 +60,7 @@ paths = {
     dest: outputDir + 'images'
   },
   builds: {
-    dest: outputDir,
-    html: outputDir + '*.html',
+    html: 'builds/development/*.html',
     json: outputDir + '*.json'
   }
 };
@@ -107,6 +107,8 @@ gulp.task('compass', function(){
 // task to reload html
 gulp.task('html', function(){
     gulp.src(paths.builds.html)
+        .pipe(gulpif(env === 'production', minifyHTML())) //pipe() uses gulpif(check if env is production, then use minifyHTML() method to process .html)
+        .pipe(gulpif(env === 'production', gulp.dest(outputDir))) //pipe() sends .html to destination folder.
         .pipe(connect.reload());
 });
 
@@ -128,7 +130,7 @@ gulp.task('watch', function(){
 // task to launch a webserver and do a live reload
 gulp.task('connect', function(){
   connect.server({
-    root: paths.builds.dest,
+    root: outputDir,
     livereload: true
   });
 });
