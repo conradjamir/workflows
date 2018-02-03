@@ -15,7 +15,9 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     babel = require('gulp-babel'),
     minifyHTML = require('gulp-minify-html'),
-    minifyJSON = require('gulp-jsonminify');
+    minifyJSON = require('gulp-jsonminify'),
+    imagemin = require('gulp-imagemin'),
+    pngcrush = require('imagemin-pngcrush');
 
 var sassDir = 'components/sass/',
     scriptsDir = 'components/scripts/',
@@ -58,7 +60,7 @@ paths = {
     dest: outputDir + 'js'
   },
   images: {
-    dest: outputDir + 'images'
+    dest: 'builds/development/images/'
   },
   builds: {
     html: 'builds/development/*.html',
@@ -105,7 +107,7 @@ gulp.task('compass', function(){
       .pipe(connect.reload()); //pipe() triggers the connect reload() method to reload page when task is run.
 });
 
-// task to reload html
+// task to reload html and minify only in production environment
 gulp.task('html', function(){
     gulp.src(paths.builds.html)
         .pipe(gulpif(env === 'production', minifyHTML())) //pipe() uses gulpif(check if env is production, then use minifyHTML() method to process .html)
@@ -113,7 +115,20 @@ gulp.task('html', function(){
         .pipe(connect.reload());
 });
 
-// task to reload json
+// task to minify images
+gulp.task('images', function(){
+    gulp.src(paths.images.dest + '**/*.*')
+        .pipe(gulpif(env === 'production', imagemin({
+          progressive: true,
+          svgoPlugins: [{ removeViewBox: false }],
+          use: [pngcrush()]
+        })))
+        .on('error', gutil.log)
+        .pipe(gulpif(env === 'production', gulp.dest(outputDir + "images"))) //pipe() sends .html to destination folder.
+        .pipe(connect.reload());
+});
+
+// task to reload json and minify only in production environment
 gulp.task('json', function(){
     gulp.src(paths.builds.json)
         .pipe(gulpif(env === 'production', minifyJSON())) //pipe() uses gulpif(check if env is production, then use minifyJSON() method to minify .json)
@@ -128,6 +143,7 @@ gulp.task('watch', function(){
   gulp.watch(paths.styles.sass, ['compass']);
   gulp.watch(paths.builds.html, ['html']);
   gulp.watch(paths.builds.json, ['json']);
+  gulp.watch(paths.images.dest + '**/*.*', ['images']);
 });
 
 // task to launch a webserver and do a live reload
@@ -139,5 +155,5 @@ gulp.task('connect', function(){
 });
 
 // if task name is 'default' just type: gulp in terminal
-gulp.task('default', ['coffee', 'js', 'compass', 'html', 'json', 'connect', 'watch']); 
+gulp.task('default', ['coffee', 'js', 'compass', 'html', 'images', 'json', 'connect', 'watch']); 
 
