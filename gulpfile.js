@@ -11,7 +11,11 @@ var gulp = require('gulp'),
     browserify = require('gulp-browserify'),
     compass = require('gulp-compass'),
     connect = require('gulp-connect'),
-    sassDir = 'components/sass/',
+    gulpif = require('gulp-if'),
+    uglify = require('gulp-uglify'),
+    babel = require('gulp-babel');
+
+var sassDir = 'components/sass/',
     scriptsDir = 'components/scripts/',
     env,
     outputDir,
@@ -19,6 +23,7 @@ var gulp = require('gulp'),
     paths;
  
 env = process.env.NODE_ENV || 'development';
+
 // in terminal change to production: NODE_ENV=production gulp
 
 if(env === 'development'){
@@ -78,6 +83,8 @@ gulp.task('js', function(){ // you can process other tasks by adding array: gulp
   gulp.src(paths.scripts.js) //src('location of file to process'), or src([]) array of files.
       .pipe(concat('script.js')) //pipe() sends js sources to concat() library to process into script.js which is the name of js file in html.
       .pipe(browserify()) //pipe() takes in browserify() method that adds jquery and mustache libraries to the script.js
+      .pipe(babel({ presets: ['es2015'] }))
+      .pipe(gulpif(env === 'production', uglify())) //pipe() uses gulpif(check if env is production, then use uglify() method to process js)
       .pipe(gulp.dest(paths.scripts.dest)) //pipe() sends script.js to destination folder.
       .pipe(connect.reload()); //pipe() triggers the connect reload() method to reload page when task is run.
 });
@@ -112,7 +119,7 @@ gulp.task('json', function(){
 // task to watch for changes gulp.watch(source, task)
 gulp.task('watch', function(){
   gulp.watch(paths.scripts.coffee, ['coffee']);
-  gulp.watch(paths.scripts.js, ['js']); //option to add connect.reload()
+  gulp.watch(paths.scripts.js, ['js']);
   gulp.watch(paths.styles.sass, ['compass']);
   gulp.watch(paths.builds.html, ['html']);
   gulp.watch(paths.builds.json, ['json']);
