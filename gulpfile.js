@@ -14,7 +14,8 @@ var gulp = require('gulp'),
     gulpif = require('gulp-if'),
     uglify = require('gulp-uglify'),
     babel = require('gulp-babel'),
-    minifyHTML = require('gulp-minify-html');
+    minifyHTML = require('gulp-minify-html'),
+    minifyJSON = require('gulp-jsonminify');
 
 var sassDir = 'components/sass/',
     scriptsDir = 'components/scripts/',
@@ -61,7 +62,7 @@ paths = {
   },
   builds: {
     html: 'builds/development/*.html',
-    json: outputDir + '*.json'
+    json: 'builds/development/js/*.json'
   }
 };
 
@@ -115,6 +116,8 @@ gulp.task('html', function(){
 // task to reload json
 gulp.task('json', function(){
     gulp.src(paths.builds.json)
+        .pipe(gulpif(env === 'production', minifyJSON())) //pipe() uses gulpif(check if env is production, then use minifyJSON() method to minify .json)
+        .pipe(gulpif(env === 'production', gulp.dest(paths.scripts.dest))) //pipe() sends .html to destination folder.
         .pipe(connect.reload());
 });
 
