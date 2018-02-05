@@ -84,16 +84,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 		}(); //anonymous closure
 
+		'use strict';
+
 		var $, fill;
 
 		$ = require('jquery');
 
 		(fill = function fill(item) {
-			return $('.tagline').append("" + item);
+			return $('.tagline').append('' + item);
 		})('The most creative minds in Art');
 
 		fill;
-
 		/*
   http://mustache.github.io
   */

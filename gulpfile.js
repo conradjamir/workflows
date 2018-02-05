@@ -78,6 +78,7 @@ gulp.task('coffee', function(){
   gulp.src(paths.scripts.coffee) //src('location of file to process'), or src([]) array of files.
       .pipe(coffee({ bare: true }) //pipe() sends source to coffee() w/object parameters bare:true so it formats w/no safety wrapper
       .on('error', gutil.log))//outputs a log error in the terminal
+      .pipe(babel({ presets: ['es2015'] }))
       .pipe(gulp.dest(paths.scripts.dir)); //write out processed script into scripts directory
 });
 
